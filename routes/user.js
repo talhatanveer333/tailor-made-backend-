@@ -22,14 +22,14 @@ router.post('/', async (req, res) => {
     if(user) return res.status(400).send('User already exist!');
 
     // else if everything is good
-    user = new User(_.pick(req.body, ['email', 'password', 'firstName', 'lastName', 'isAdmin', 'isEmployee', 'businessList']));
-    user.selectedBusiness=req.body.businessList[0];// setting the current business
+    user = new User(_.pick(req.body, ['email', 'password', 'firstName']));
     const salt=await bcrypt.genSalt(10);// generating salt
     user.password=await bcrypt.hash(user.password, salt);// generating hashed password using bcrypt
     await user.save();
 
-    const token = user.generateAuthToken();
-    res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
+    //const token = user.generateAuthToken();
+    //res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
+    res.send(_.pick(user, ['_id', 'email', 'firstName']));
 })
 
 module.exports=router;

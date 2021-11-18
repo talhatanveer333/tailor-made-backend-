@@ -19,7 +19,7 @@ if(!config.get('jwtPrivateKey')){
 //     { useUnifiedTopology: true, })
 //     .then(() => console.log('Connected to the database....'))
 //     .catch((err) => console.log('Connection error!', err));
-mongoose.connect('mongodb://localhost/pos')
+mongoose.connect('mongodb://localhost/tailorMadeDatabase')
 .then(() => console.log('Connected to the local database....'))
 .catch((err) => console.log('Connection error!', err));
 
