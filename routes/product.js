@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const {Product, validate}=require('../models/product');
 const authorization=require('../middleware/authorization');
 const isAdmin=require('../middleware/isAdmin');
-const isEmployeeOrAdmin=require('../middleware/isEmployeeOrAdmin');
+// const isEmployeeOrAdmin=require('../middleware/isEmployeeOrAdmin');
 
 router.post('/', authorization, isAdmin, async (req, res) =>{
     ////////////// adding ////////////////////

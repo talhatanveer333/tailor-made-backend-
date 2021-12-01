@@ -43,7 +43,7 @@ const orderSchema=mongoose.Schema({
     productDetails:{
         type:productDetailsSchema,
     },
-    coments:{
+    comments:{
         type:[{
             type:String,
         }],
@@ -58,6 +58,7 @@ const orderSchema=mongoose.Schema({
     },
     status:{
         type:String,
+        require:true
     },
     qty:{
         type:Number,
@@ -80,16 +81,15 @@ function validateOrder(order){
             stuff:Joi.string(),
             color:Joi.string(),
             summary:Joi.string(),
-        }),
+        }).when('productType', {is:'custom', then:Joi.required(), otherwise:Joi.optional() }),
         customer:Joi.any().required(),
         tailor:Joi.any().required(),
         productType:Joi.string().required(),
-        productId:Joi.any().required(),
-        coments:Joi.object({
+        productId:Joi.any().when('productType', {is:'catalog' , then:Joi.required(), otherwise:Joi.optional() }),
+        comments:Joi.object({
             putDate:Joi.string(),
         }),
         deliveryDate:Joi.date().required(),
-        status:Joi.string().required(),
         qty:Joi.number().min(1).required(),
         totalAmount:Joi.number().min(0).required(),
     });

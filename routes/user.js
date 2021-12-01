@@ -7,14 +7,16 @@ const authorization = require('../middleware/authorization');
 const isAdmin = require('../middleware/isAdmin');
 const router = express.Router();
 
-router.get('/me', [authorization, isAdmin], async(req, res) => {
+router.get('/me', authorization, async(req, res) => {
     const user=await User.findOne({_id:req.user._id});
     if(!user) return res.status(400).send('Invalid email or password');
 
-    res.send(_.pick(user, ['email', 'firstName', 'lastName']));
+    if(user.type!=='admin')
+        return res.send(_.pick(user, ['email', 'firstName', 'lastName']));
+    return res.send(_.pick(user, ['email', 'firstName', 'lastName', 'type']));
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorization, isAdmin, async (req, res) => {
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);// if any error in data recieved
 
@@ -22,14 +24,14 @@ router.post('/', async (req, res) => {
     if(user) return res.status(400).send('User already exist!');
 
     // else if everything is good
-    user = new User(_.pick(req.body, ['email', 'password', 'firstName']));
+    user = new User(_.pick(req.body, ['email', 'password', 'firstName', 'lastName', 'type']));
     const salt=await bcrypt.genSalt(10);// generating salt
     user.password=await bcrypt.hash(user.password, salt);// generating hashed password using bcrypt
     await user.save();
 
     //const token = user.generateAuthToken();
     //res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
-    res.send(_.pick(user, ['_id', 'email', 'firstName']));
+    res.send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'type']));
 })
 
 module.exports=router;
