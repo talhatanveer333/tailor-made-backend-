@@ -25,23 +25,19 @@ const userSchema=new mongoose.Schema({
         maxLength: 25, 
         required: true,
     },
-    // lastName: {
-    //     type: String,
-    //     minLength: 3,
-    //     maxLength: 25, 
-    //     required: true,
-    // },
-    // isAdmin: {
-    //     type: Boolean,
-    //     default: false,
-    // },
-    // isCustomer:{
-    //     type: Boolean,
-    //     default: false,
-    // },
+    lastName: {
+        type: String,
+        minLength: 3,
+        maxLength: 25, 
+        required: true,
+    },
+    type: {
+        type: String,
+        default: 'basic',
+    },
 });
 userSchema.methods.generateAuthToken= function () {
-    return jwt.sign({_id:this._id, isAdmin:this.isAdmin, isCustomer:this.isCustomer, firstName:this.firstName, lastName:this.lastName, email:this.email}, config.get('jwtPrivateKey'));
+    return jwt.sign({_id:this._id, isAdmin:this.type, firstName:this.firstName, lastName:this.lastName, email:this.email}, config.get('jwtPrivateKey'));
 }
 
 const User = mongoose.model('User', userSchema);
@@ -52,9 +48,8 @@ function validateUser(user)
         email: Joi.string().min(3).max(255).required().email(),
         password: Joi.string().min(8).max(255).required(),
         firstName: Joi.string().min(3).max(25).required(),
-        // lastName: Joi.string().min(3).max(25).required(),
-        // isAdmin: Joi.boolean(),
-        // isCustomer: Joi.boolean(),
+        lastName: Joi.string().min(3).max(25).required(),
+        type: Joi.string(),
     });
     return schema.validate(user);
 }

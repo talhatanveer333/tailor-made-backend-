@@ -7,6 +7,7 @@ const users=require('./routes/user');
 const auth=require('./routes/auth');
 const products=require('./routes/product');
 const customers=require('./routes/customer');
+const orders=require('./routes/order');
 require('./startup/prod')(app);
 
 if(!config.get('jwtPrivateKey')){
@@ -30,6 +31,7 @@ app.use('/api/users', users);
 app.use('/api/auth', auth);
 app.use('/api/products', products);
 app.use('/api/customers', customers);
+app.use('/api/orders', orders);
 
 app.get('/', (req, res)=> {
     res.send('POS backend is running and live!');
