@@ -9,6 +9,8 @@ const {Order, validate}=require('../models/order');
 const {User}=require('../models/user');
 const authorization=require('../middleware/authorization');
 const isCustomer=require('../middleware/isCutomer');
+const isTailor=require('../middleware/isTailor');
+const sendEmail=require('../services/mailer');
 
 router.post('/', authorization, isCustomer,  async (req, res) =>{
     // if validation error
@@ -35,9 +37,25 @@ router.post('/', authorization, isCustomer,  async (req, res) =>{
         'productId', 'comments', 'deliveryDate', 'qty', 'totalAmount']));
     }
     order.status='pending for approval';// by default for tailor to approve
-    order.save();
+    await order.save();
+    await sendEmail('talhatanveer333@gmail.com', 'Smart Tailor Order Confirmation', 'This is easy.');
     // sending back the newly created instance
     res.send(order);
+});
+
+
+router.post('/approve/:id', authorization, isTailor, async(req, res)=>{
+    const orderId=req.params.id;
+    if(!orderId) return res.status(400).send('Invalid order id.');
+
+    const order=await Order.findOne({_id:orderId, tailor:req.user._id});
+    if(!order) return res.status(400).send('Order not found.');
+
+    // else if everything is good
+    order.status="Progress";
+    await order.save();
+    // email sending
+    
 });
 
 module.exports=router;
