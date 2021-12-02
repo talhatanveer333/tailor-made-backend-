@@ -1,5 +1,5 @@
 const express = require('express');
-const _ = require('lodash');
+const _= require('lodash');
 const bcrypt=require('bcrypt');
 
 const { validate, User } = require('../models/user');
@@ -7,13 +7,11 @@ const authorization = require('../middleware/authorization');
 const isAdmin = require('../middleware/isAdmin');
 const router = express.Router();
 
-router.get('/me', authorization, async(req, res) => {
-    const user=await User.findOne({_id:req.user._id});
-    if(!user) return res.status(400).send('Invalid email or password');
+router.get('/', authorization, isAdmin, async(req, res) => {
+    const users=await User.find({type:{$ne:'admin'}});
+    if(!users) return res.status(400).send('No user found.');
 
-    if(user.type!=='admin')
-        return res.send(_.pick(user, ['email', 'firstName', 'lastName']));
-    return res.send(_.pick(user, ['email', 'firstName', 'lastName', 'type']));
+    return res.send(_.map(users, _.partialRight(_.pick, ['email', 'password', 'firstName', 'lastName', 'type'])));
 });
 
 router.post('/', authorization, isAdmin, async (req, res) => {
@@ -32,6 +30,36 @@ router.post('/', authorization, isAdmin, async (req, res) => {
     //const token = user.generateAuthToken();
     //res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
     res.send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'type']));
-})
+});
+
+router.get('/me', authorization, async(req, res) => {
+    const user=await User.findOne({_id:req.user._id});
+    if(!user) return res.status(400).send('Invalid email or password');
+
+    if(user.type!=='admin')
+        return res.send(_.pick(user, ['email', 'firstName', 'lastName']));
+    return res.send(_.pick(user, ['email', 'firstName', 'lastName', 'type']));
+});
+
+router.patch('/me/edit', authorization, async(req,res)=>{
+    // let user=await User.findOne({_id:req.user._id});
+    // if(!user) return res.status(400).send('Invalid email or password');
+
+    const address=req.body.address;
+    // console.log(user);
+    if(true){
+        await User.findOneAndUpdate({_id:req.user._id},
+            {$push:{items:{street:'woh street'}}},
+            {new: true, upsert: true }
+            );
+        // user.address.street=address.street;
+        // user.address.province=address.province;
+        // user.zip=address.zip;
+        // user.country=address.country;
+    }
+    // console.log(user);
+    // await user.save();
+    res.send('Profile edited successfully.');
+});
 
 module.exports=router;

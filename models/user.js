@@ -4,6 +4,25 @@ const config=require('config');
 const Joi = require('joi');
 
 
+const addressSchema=mongoose.Schema({
+    street:{
+        type:String,
+        maxLength:50
+    },
+    province:{
+        type:String,
+        maxLength:50
+    },
+    zip:{
+        type:Number,
+        maxLength:10
+    },
+    country:{
+        type:String,
+        maxLength:50
+    }
+})
+
 // User model schema
 const userSchema=new mongoose.Schema({
     email: {
@@ -35,6 +54,9 @@ const userSchema=new mongoose.Schema({
         type: String,
         default: 'basic',
     },
+    address:{
+        type:[{addressSchema}],
+    }
 });
 userSchema.methods.generateAuthToken= function () {
     return jwt.sign({_id:this._id, type:this.type, firstName:this.firstName, lastName:this.lastName, email:this.email}, config.get('jwtPrivateKey'));
@@ -50,6 +72,12 @@ function validateUser(user)
         firstName: Joi.string().min(3).max(25).required(),
         lastName: Joi.string().min(3).max(25).required(),
         type: Joi.string(),
+        address:Joi.object({
+            street:Joi.string().max(50),
+            province:Joi.string().max(30),
+            zip:Joi.number().max(10),
+            country:Joi.string().max(50),
+        }),
     });
     return schema.validate(user);
 }
