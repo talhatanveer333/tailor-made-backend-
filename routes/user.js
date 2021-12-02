@@ -42,24 +42,17 @@ router.get('/me', authorization, async(req, res) => {
 });
 
 router.patch('/me/edit', authorization, async(req,res)=>{
-    // let user=await User.findOne({_id:req.user._id});
-    // if(!user) return res.status(400).send('Invalid email or password');
+    let user=await User.findOne({_id:req.user._id});
+    if(!user) return res.status(400).send('Invalid email or password');
 
-    const address=req.body.address;
-    // console.log(user);
-    if(true){
-        await User.findOneAndUpdate({_id:req.user._id},
-            {$push:{items:{street:'woh street'}}},
-            {new: true, upsert: true }
-            );
-        // user.address.street=address.street;
-        // user.address.province=address.province;
-        // user.zip=address.zip;
-        // user.country=address.country;
-    }
-    // console.log(user);
-    // await user.save();
-    res.send('Profile edited successfully.');
+     const address=req.body.address;
+    // console.log(address);
+
+    console.log(user);
+    user.address.push(address); 
+    //console.log(user);
+    await user.save();
+    res.send(user);
 });
 
 module.exports=router;
