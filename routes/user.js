@@ -22,14 +22,14 @@ router.post('/', authorization, isAdmin, async (req, res) => {
     if(user) return res.status(400).send('User already exist!');
 
     // else if everything is good
-    user = new User(_.pick(req.body, ['email', 'password', 'firstName', 'lastName', 'type']));
+    user = new User(_.pick(req.body, ['email', 'password', 'firstName', 'lastName', 'type', 'address']));
     const salt=await bcrypt.genSalt(10);// generating salt
     user.password=await bcrypt.hash(user.password, salt);// generating hashed password using bcrypt
     await user.save();
 
     //const token = user.generateAuthToken();
     //res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
-    res.send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'type']));
+    res.send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'type', 'address']));
 });
 
 router.get('/me', authorization, async(req, res) => {
@@ -45,12 +45,9 @@ router.patch('/me/edit', authorization, async(req,res)=>{
     let user=await User.findOne({_id:req.user._id});
     if(!user) return res.status(400).send('Invalid email or password');
 
-     const address=req.body.address;
-    // console.log(address);
+    const address=req.body.address;
+    if(address) user.address.push(address);
 
-    console.log(user);
-    user.address.push(address); 
-    //console.log(user);
     await user.save();
     res.send(user);
 });

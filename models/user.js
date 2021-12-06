@@ -55,7 +55,7 @@ const userSchema=new mongoose.Schema({
         default: 'basic',
     },
     address:{
-        type:[{addressSchema}],
+        type:[addressSchema],
     }
 });
 userSchema.methods.generateAuthToken= function () {
@@ -75,7 +75,7 @@ function validateUser(user)
         address:Joi.object({
             street:Joi.string().max(50),
             province:Joi.string().max(30),
-            zip:Joi.number().max(10),
+            zip:Joi.number().max(100000),
             country:Joi.string().max(50),
         }),
     });
