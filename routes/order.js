@@ -39,7 +39,7 @@ router.post('/', authorization, isCustomer,  async (req, res) =>{
     }
     order.status='pending for approval';// by default for tailor to approve
     await order.save();
-    //await sendEmail('talhatanveer333@gmail.com', 'Smart Tailor Order Confirmation', 'This is easy.');
+    await sendEmail('talhatanveer333@gmail.com', 'Smart Tailor Order Confirmation', 'This is easy.');
     // sending back the newly created instance
     res.send(order);
 });

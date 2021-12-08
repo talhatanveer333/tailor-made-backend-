@@ -14,7 +14,7 @@ router.get('/', authorization, isAdmin, async(req, res) => {
     return res.send(_.map(users, _.partialRight(_.pick, ['email', 'password', 'firstName', 'lastName', 'type'])));
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorization, isAdmin, async (req, res) => {
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);// if any error in data recieved
 
