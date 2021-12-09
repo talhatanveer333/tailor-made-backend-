@@ -5,8 +5,8 @@ const config=require('config');
 const transporter=nodeMailer.createTransport({
     service: 'gmail',
     port: 587,
-    secure: false, // true for 587, false for other ports
-    requireTLS: true,
+    // secure: false, // true for 587, false for other ports
+    //requireTLS: true,
     auth: {
         user: config.get('mailSender'), 
         pass: config.get('mailSenderPassword'), 
