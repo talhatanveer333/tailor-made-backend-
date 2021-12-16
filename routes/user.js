@@ -5,7 +5,6 @@ const bcrypt=require('bcrypt');
 const { validate, User } = require('../models/user');
 const authorization = require('../middleware/authorization');
 const isAdmin = require('../middleware/isAdmin');
-const frontEnd = require('../models/feedback.js');
 const router = express.Router();
 
 router.get('/', authorization, isAdmin, async(req, res) => {
@@ -13,7 +12,6 @@ router.get('/', authorization, isAdmin, async(req, res) => {
     if(!users) return res.status(400).send('No user found.');
 
     return res.send(_.map(users, _.partialRight(_.pick, ['email', 'password', 'firstName', 'lastName', 'type'])));
-    
 });
 
 router.post('/', authorization, isAdmin, async (req, res) => {
