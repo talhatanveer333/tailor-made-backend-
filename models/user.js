@@ -53,6 +53,9 @@ const userSchema=new mongoose.Schema({
     },
     rating:{
         type:Number,
+    },
+    imageUrl:{
+        type: String,
     }
 });
 userSchema.methods.generateAuthToken= function () {
@@ -75,6 +78,7 @@ function validateUser(user)
             country:Joi.string().max(50),
         }),
         rating:Joi.number().max(5),
+        imageUrl:Joi.any(),
     });
     return schema.validate(user);
 }

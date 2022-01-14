@@ -11,7 +11,7 @@ router.get('/', authorization, isAdmin, async(req, res) => {
     const users=await User.find({type:{$ne:'admin'}});
     if(!users) return res.status(400).send('No user found.');
 
-    return res.send(_.map(users, _.partialRight(_.pick, ['email', 'password', 'firstName', 'lastName', 'type'])));
+    return res.send(_.map(users, _.partialRight(_.pick, ['email', 'password', 'firstName', 'lastName', 'type','imageUrl'])));
 });
 
 router.post('/', authorization, isAdmin, async (req, res) => {
@@ -22,14 +22,14 @@ router.post('/', authorization, isAdmin, async (req, res) => {
     if(user) return res.status(400).send('User already exist!');
 
     // else if everything is good
-    user = new User(_.pick(req.body, ['email', 'password', 'name', 'rating', 'type', 'address']));
+    user = new User(_.pick(req.body, ['email', 'password', 'name', 'rating', 'type', 'address','imageUrl']));
     const salt=await bcrypt.genSalt(10);// generating salt
     user.password=await bcrypt.hash(user.password, salt);// generating hashed password using bcrypt
     await user.save();
 
     //const token = user.generateAuthToken();
     //res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
-    res.send(_.pick(user, ['_id', 'email', 'name', 'name', 'type', 'address', 'rating']));
+    res.send(_.pick(user, ['_id', 'email', 'name', 'name', 'type', 'address', 'rating','imageUrl']));
 });
 
 router.get('/me', authorization, async(req, res) => {
@@ -37,17 +37,16 @@ router.get('/me', authorization, async(req, res) => {
     if(!user) return res.status(400).send('Invalid email or password');
 
     if(user.type!=='admin')
-        return res.send(_.pick(user, ['email', 'name']));
-    return res.send(_.pick(user, ['email', 'name', 'type']));
+        return res.send(_.pick(user, ['email', 'name','imageUrl']));
+    return res.send(_.pick(user, ['email', 'name', 'type','imageUrl']));
 });
 router.get('/tailors', authorization, async(req, res) => {
     const users=await User.find();
     if(users.length<0) return res.status(400).send('No tailors found.');
 
-    
     if(req.user.type!=='admin')
-        return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address'])));
-    return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address','type'])));
+        return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address','imageUrl'])));
+    return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address','type','imageUrl'])));
 });
 
 router.patch('/me/edit', authorization, async(req,res)=>{
