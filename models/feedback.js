@@ -8,7 +8,7 @@ const feedbackSchema= mongoose.Schema({
         minLength:1,
         maxLength:255,
     },
-    reting:{
+    rating:{
         type:Number,
         required:true,
         minLength:1,
@@ -25,14 +25,16 @@ const feedbackSchema= mongoose.Schema({
         required:true,
     },
 });
-
+feedbackSchema.methods.calculateAverageRating=()=>{
+    console.log('calculating average ratings...');
+};
 const Feedback=mongoose.model('feedback', feedbackSchema);
 
 function validateFeedback(feedback){
     const schema=Joi.object({
         comment:Joi.string().min(1).max(255).required(),
         rating:Joi.number().min(0).max(5).required(),
-        author:Joi.any().required(),
+        author:Joi.any(),
         for:Joi.any().required(),
     });
     return schema.validate(feedback);

@@ -7,6 +7,7 @@ const users=require('./routes/user');
 const auth=require('./routes/auth');
 const products=require('./routes/product');
 const orders=require('./routes/order');
+const feedbacks=require('./routes/feedback');
 require('./startup/prod')(app);
 
 if(!config.get('jwtPrivateKey')){
@@ -19,7 +20,7 @@ if(!config.get('jwtPrivateKey')){
 //     { useUnifiedTopology: true, })
 //     .then(() => console.log('Connected to the database....'))
 //     .catch((err) => console.log('Connection error!', err));
-mongoose.connect('mongodb://localhost/tailorMadeDatabase')
+mongoose.connect('mongodb://localhost/smartTailorDatabase')
 .then(() => console.log('Connected to the local database....'))
 .catch((err) => console.log('Connection error!', err));
 
@@ -30,6 +31,7 @@ app.use('/api/users', users);
 app.use('/api/auth', auth);
 app.use('/api/products', products);
 app.use('/api/orders', orders);
+app.use('/api/feedbacks',feedbacks);
 
 app.get('/', (req, res)=> {
     res.send('POS backend is running and live!');

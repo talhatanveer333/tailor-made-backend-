@@ -12,8 +12,7 @@ router.post('/', authorization, async (req, res) =>{
     const {error}=validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
-    const validUser=mongoose.Types.ObjectId.isValid(req.body.author);
-    if(!validUser) return res.status(400).send('Invalid User!');
+    req.body.author=req.user._id;
 
     let product=await Product.findOne({author:req.user._id, name:req.body.name});
     if(product) return res.status(400).send('Product already exist!');
