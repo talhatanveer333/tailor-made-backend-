@@ -40,6 +40,15 @@ router.get('/me', authorization, async(req, res) => {
         return res.send(_.pick(user, ['email', 'name']));
     return res.send(_.pick(user, ['email', 'name', 'type']));
 });
+router.get('/tailors', authorization, async(req, res) => {
+    const users=await User.find();
+    if(users.length<0) return res.status(400).send('No tailors found.');
+
+    
+    if(req.user.type!=='admin')
+        return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address'])));
+    return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address','type'])));
+});
 
 router.patch('/me/edit', authorization, async(req,res)=>{
     let user=await User.findOne({_id:req.user._id});

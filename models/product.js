@@ -1,6 +1,17 @@
 const mongoose=require('mongoose');
 const Joi=require('joi');
 
+const packageShema=mongoose.Schema({
+    package:{
+        type:String,
+        minLength:1,
+        maxLength:255
+    },
+    price:{
+        type:Number,
+    }
+})
+
 const productSchema= mongoose.Schema({
     name:{
         type:String,
@@ -25,8 +36,11 @@ const productSchema= mongoose.Schema({
         required: true
     },
     imageUrl:{
-        type:String,
-    }
+        type:[String],
+    },
+    packages:{
+        type:[packageShema]
+    },
 });
 // write any function required to embed to the model below
 
@@ -39,7 +53,8 @@ function validateProduct(product){
         description: Joi.string().min(1).max(255),
         price: Joi.number().integer().positive().required(),
         author: Joi.any(),
-        imageUrl: Joi.string(),
+        imageUrl: Joi.any(),
+        packages:Joi.any(),
     });
     return schema.validate(product);
 }               
