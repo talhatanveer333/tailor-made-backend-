@@ -5,50 +5,59 @@ const mongoose = require('mongoose');
 
 const {Product, validate}=require('../models/product');
 const authorization=require('../middleware/authorization');
-const isAdmin=require('../middleware/isAdmin');
-// const isEmployeeOrAdmin=require('../middleware/isEmployeeOrAdmin');
+const isCustomer=require('../middleware/isCutomer');
 
-router.post('/', authorization, isAdmin, async (req, res) =>{
+router.post('/', authorization, async (req, res) =>{
     ////////////// adding ////////////////////
     const {error}=validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
-    let product=await Product.findOne({author:req.user._id, business:req.user.selectedBusiness, name:req.body.name});
+    const validUser=mongoose.Types.ObjectId.isValid(req.body.author);
+    if(!validUser) return res.status(400).send('Invalid User!');
+
+    let product=await Product.findOne({author:req.user._id, name:req.body.name});
     if(product) return res.status(400).send('Product already exist!');
 
-    // const validUser=mongoose.Types.ObjectId.isValid(req.body.author);
-    // if(!validUser) return res.status(400).send('Invalid User!');
-
     //else if everything is good
-
     //choose what to save in database
-    product=new Product(_.pick(req.body, ['name', 'upc', 'description', 'pp', 'sp', 'inventory']));
-    product.author=req.user._id;// setting the author
-    product.business=req.user.selectedBusiness;// setting the business
-    // calculating worth
-    let worth=product.inventory.au * product.pp;// using purchase price
-    product.inventory.worth=worth;
+    product=new Product(_.pick(req.body, ['name', 'description', 'price', 'imageUrl']));
+    product.author=req.user._id;// setting the author    
     // saving to the database
     await product.save();
 
-    res.send(_.pick(product, ['_id', 'name', 'upc', 'description', 'pp', 'sp', 'author', 'inventory']));
+    res.send(_.pick(product, ['_id', 'name', 'description', 'price', 'imageUrl', 'author']));
 });
 
 //////////////getting//////////////////
 router.get('/', authorization, async (req, res) =>{
-    let products=await Product.find({author:req.user._id, business:req.user.selectedBusiness});
+    let products=await Product.find({author:req.user._id});
     if (!products) return res.status(404).send('Not found.');
+    
     res.send(products);
 });
 router.get('/:name', authorization, async (req, res) =>{
-    console.log(req.params.name);
-    let product=await Product.findOne({author:req.user._id, name:req.params.name, business:req.user.selectedBusiness});
-    if (!product) return res.status(404).send('Not found.');
-    res.send(product);
+    let name=req.params.name;
+    if(name){
+        let product=await Product.findOne({author:req.user._id, name:req.params.name});
+        if (!product) return res.status(404).send('Not found.');
+        res.send(product);
+    } else{
+        res.status(400).send('Product name is required.');
+    }
+});
+router.get('/:tailorId', authorization, async (req, res) =>{
+    let tailorId=req.params.tailorId;
+    if(tailorId){
+        let product=await Product.findOne({author:tailorId});
+        if (!product) return res.status(404).send('Not found.');
+        res.send(product);
+    } else{
+        res.status(400).send('TailorId is required.');
+    }
 });
 //////////////editing///////////////////
 // inventory update
-router.patch('/:name/:cartons/:units', authorization, isAdmin, async (req, res) =>{
+router.patch('/:name/:cartons/:units', authorization, async (req, res) =>{
     try{
         let product=await Product.findOne({author:req.user._id, business:req.user.selectedBusiness, name:req.params.name});
         if (!product) return res.status(404).send('Bad request!');

@@ -22,14 +22,14 @@ router.post('/', authorization, isAdmin, async (req, res) => {
     if(user) return res.status(400).send('User already exist!');
 
     // else if everything is good
-    user = new User(_.pick(req.body, ['email', 'password', 'firstName', 'lastName', 'type', 'address']));
+    user = new User(_.pick(req.body, ['email', 'password', 'name', 'rating', 'type', 'address']));
     const salt=await bcrypt.genSalt(10);// generating salt
     user.password=await bcrypt.hash(user.password, salt);// generating hashed password using bcrypt
     await user.save();
 
     //const token = user.generateAuthToken();
     //res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
-    res.send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'type', 'address']));
+    res.send(_.pick(user, ['_id', 'email', 'name', 'name', 'type', 'address', 'rating']));
 });
 
 router.get('/me', authorization, async(req, res) => {
@@ -37,8 +37,8 @@ router.get('/me', authorization, async(req, res) => {
     if(!user) return res.status(400).send('Invalid email or password');
 
     if(user.type!=='admin')
-        return res.send(_.pick(user, ['email', 'firstName', 'lastName']));
-    return res.send(_.pick(user, ['email', 'firstName', 'lastName', 'type']));
+        return res.send(_.pick(user, ['email', 'name']));
+    return res.send(_.pick(user, ['email', 'name', 'type']));
 });
 
 router.patch('/me/edit', authorization, async(req,res)=>{
