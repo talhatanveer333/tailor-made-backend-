@@ -21,7 +21,8 @@ router.get('/user/:userId', authorization, async(req, res)=>{
     const isValidUser=mongoose.Types.ObjectId.isValid(userId);
     if(!isValidUser) return res.status(400).send('UserId is not valid.');
 
-    const feedbacks=await Feedback.find({for:userId});
+    const feedbacks=await Feedback.find({for:userId})
+    .populate('author', 'name rating imageUrl -_id');
     if(feedbacks.length<1) return res.send('No feedback found.');
 
     res.send(feedbacks);

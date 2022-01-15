@@ -33,7 +33,7 @@ router.post('/', authorization, isAdmin, async (req, res) => {
 });
 
 router.get('/me', authorization, async(req, res) => {
-    const user=await User.findOne({_id:req.user._id});
+    const user=await User.findOne({_id:req.user._id})
     if(!user) return res.status(400).send('Invalid email or password');
 
     if(user.type!=='admin')
@@ -41,7 +41,10 @@ router.get('/me', authorization, async(req, res) => {
     return res.send(_.pick(user, ['email', 'name', 'type','imageUrl']));
 });
 router.get('/tailors', authorization, async(req, res) => {
-    const users=await User.find();
+    const users=await User.find()
+    .limit(10)
+    .sort({rating:-1})
+    .select({password:0, __v:0});;
     if(users.length<0) return res.status(400).send('No tailors found.');
 
     if(req.user.type!=='admin')
