@@ -49,7 +49,7 @@ const userSchema=new mongoose.Schema({
         default: 'customer',
     },
     address:{
-        type:[addressSchema],
+        type:addressSchema,
     },
     rating:{
         type:Number,
@@ -59,7 +59,7 @@ const userSchema=new mongoose.Schema({
     }
 });
 userSchema.methods.generateAuthToken= function () {
-    return jwt.sign({_id:this._id, type:this.type, firstName:this.name, email:this.email}, config.get('jwtPrivateKey'));
+    return jwt.sign({_id:this._id, type:this.type, name:this.name, email:this.email, imageUrl:this.imageUrl, rating:this.rating}, config.get('jwtPrivateKey'));
 }
 
 const User = mongoose.model('User', userSchema);

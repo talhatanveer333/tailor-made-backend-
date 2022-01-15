@@ -45,8 +45,8 @@ router.get('/tailors', authorization, async(req, res) => {
     if(users.length<0) return res.status(400).send('No tailors found.');
 
     if(req.user.type!=='admin')
-        return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address','imageUrl'])));
-    return res.send(users.map(user => _.pick(user, ['name', 'rating', 'address','type','imageUrl'])));
+        return res.send(users.map(user => _.pick(user, ['_id', 'name', 'rating', 'address','imageUrl'])));
+    return res.send(users.map(user => _.pick(user, ['_id','name', 'rating', 'address','type','imageUrl'])));
 });
 
 router.patch('/me/edit', authorization, async(req,res)=>{
