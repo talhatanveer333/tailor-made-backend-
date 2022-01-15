@@ -56,10 +56,14 @@ const userSchema=new mongoose.Schema({
     },
     imageUrl:{
         type: String,
+    },
+    intro:{
+        type:String,
+        maxLength:255,
     }
 });
 userSchema.methods.generateAuthToken= function () {
-    return jwt.sign({_id:this._id, type:this.type, name:this.name, email:this.email, imageUrl:this.imageUrl, rating:this.rating}, config.get('jwtPrivateKey'));
+    return jwt.sign({_id:this._id, type:this.type, intro:this.intro, name:this.name, email:this.email, imageUrl:this.imageUrl, rating:this.rating}, config.get('jwtPrivateKey'));
 }
 
 const User = mongoose.model('User', userSchema);
@@ -79,6 +83,7 @@ function validateUser(user)
         }),
         rating:Joi.number().max(5),
         imageUrl:Joi.any(),
+        intro: Joi.string().max(255),
     });
     return schema.validate(user);
 }
