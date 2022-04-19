@@ -26,7 +26,7 @@ router.get("/", authorization, isAdmin, async (req, res) => {
   );
 });
 
-router.post("/", authorization, isAdmin, async (req, res) => {
+router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message); // if any error in data recieved
 
@@ -62,6 +62,36 @@ router.post("/", authorization, isAdmin, async (req, res) => {
       "rating",
       "imageUrl",
     ])
+  );
+});
+router.post("/tailor", async (req, res) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message); // if any error in data recieved
+
+  let user = await User.findOne({ email: req.body.email }); // if user already exist
+  if (user) return res.status(400).send("User already exist!");
+
+  // else if everything is good
+  user = new User(
+    _.pick(req.body, [
+      "email",
+      "password",
+      "name",
+      "rating",
+      "type",
+      "address",
+      "imageUrl",
+    ])
+  );
+  const salt = await bcrypt.genSalt(10); // generating salt
+  user.password = await bcrypt.hash(user.password, salt); // generating hashed password using bcrypt
+  user.type = "tailor";
+  await user.save();
+
+  const token = user.generateAuthToken();
+  res.header("x-auth-token", token);
+  res.send(
+    _.pick(user, ["_id", "email", "name", "address", "rating", "imageUrl"])
   );
 });
 
