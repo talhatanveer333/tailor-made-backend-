@@ -1,5 +1,5 @@
 {
-    "jwtPrivateKey":"POSJWTPRIVATEKEY",
-    "mailSender":"MAILSENDER",
-    "mailSenderPassword":"MAILSENDERPASSWORD"
+  "jwtPrivateKey": "JWTPRIVATEKEY",
+  "mailSender": "MAILSENDER",
+  "mailSenderPassword": "MAILSENDERPASSWORD"
 }
