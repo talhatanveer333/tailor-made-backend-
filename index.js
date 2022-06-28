@@ -2,13 +2,13 @@ const config = require("config");
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const users = require("./routes/user");
 const auth = require("./routes/auth");
 const products = require("./routes/product");
 const orders = require("./routes/order");
 const feedbacks = require("./routes/feedback");
-const cors = require("./middleware/cors");
 require("./startup/prod")(app);
 
 if (!config.get("jwtPrivateKey")) {
@@ -29,8 +29,8 @@ mongoose
 //   .then(() => console.log("Connected to the local database...."))
 //   .catch((err) => console.log("Connection error!", err));
 
+app.use(cors());
 app.use(express.json());
-app.use(cors);
 
 //// Endpoints
 app.use("/api/users", users);

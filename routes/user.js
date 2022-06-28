@@ -7,7 +7,7 @@ const authorization = require("../middleware/authorization");
 const isAdmin = require("../middleware/isAdmin");
 const router = express.Router();
 
-router.get("/", authorization, isAdmin, async (req, res) => {
+router.get("/", authorization, async (req, res) => {
   const users = await User.find({ type: { $ne: "admin" } });
   if (!users) return res.status(400).send("No user found.");
 
@@ -49,21 +49,10 @@ router.post("/", async (req, res) => {
   user.password = await bcrypt.hash(user.password, salt); // generating hashed password using bcrypt
   await user.save();
 
-  //const token = user.generateAuthToken();
-  //res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'firstName', 'lastName', 'businessList']));
-  res.send(
-    _.pick(user, [
-      "_id",
-      "email",
-      "name",
-      "name",
-      "type",
-      "address",
-      "rating",
-      "imageUrl",
-    ])
-  );
+  const token = user.generateAuthToken();
+  res.send(token);
 });
+
 router.post("/tailor", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message); // if any error in data recieved
